@@ -1,16 +1,12 @@
 package org.jparser.htmlparser;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Attributes;
-import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,28 +25,79 @@ public class HtmlParserApplication {
 				" <td><b>(\\w+)</b> (.+?)</td>\n" +
 				" <td class=\"silver\">([а-яёА-ЯЁ,; ]+)</td>";
 
-		String regex2 = "<td class=\"silver\">(\\d+)</td>\n" +
-				" <td><b>(\\w+)</b>(.*?)</td>\n";
+		String regex2 = "^(.+?)<br><b>(\\w+)</b> (.+?)$";
+
 		Pattern pattern = Pattern.compile(regex1);
+		Pattern pattern2 = Pattern.compile(regex2);
 
-		System.out.println(elements.get(4).toString());
 
+		String present;
+		String presentTranscription;
+		String past;
+		String pastTranscription;
+		String past2;
+		String past2Transcription;
+		String participle;
+		String participleTrascription;
+		String participle2;
+		String participle2Trascription;
+		String translate;
+		boolean found;
 
-		Matcher matcher = pattern.matcher(elements.get(4).toString());
-		while(matcher.find()){
-				System.out.println("Group1: " + matcher.group(0));
-				System.out.println("Group2: " + matcher.group(1));
-				System.out.println("Group3: " + matcher.group(2));
-				System.out.println("Group4: " + matcher.group(3));
-				System.out.println("Group5: " + matcher.group(4));
-				System.out.println("Group6: " + matcher.group(5));
-				System.out.println("Group7: " + matcher.group(6));
-				System.out.println("Group8: " + matcher.group(7));
-				System.out.println("Group9: " + matcher.group(8));
+		for (int i = 0; i < elements.size(); i++) {
+
+			Matcher matcher = pattern.matcher(elements.get(i).toString());
+
+			if (matcher.find()) {
+
+				present = matcher.group(2);
+				presentTranscription = matcher.group(3);
+				past = matcher.group(4);
+				pastTranscription = matcher.group(5);
+				participle = matcher.group(6);
+				participleTrascription = matcher.group(7);
+				translate = matcher.group(8);
+
+				found = matcher.group(5).contains("<br>");
+
+			} else	{
+				continue;
+			}
+			if (found) {
+				String newMatch = pastTranscription.replaceAll("(?m)^\\s+", "");
+				Matcher matcher2 = pattern2.matcher(newMatch);
+				if (matcher2.find()) {
+					pastTranscription = matcher2.group(1);
+					past2 = matcher2.group(2);
+					past2Transcription = matcher.group(3);
+
+				}
+				newMatch = participleTrascription.replaceAll("(?m)^\\s+", "");
+				matcher2 = pattern2.matcher(newMatch);
+				if (matcher2.find()) {
+					participleTrascription = matcher2.group(1);
+					participle2 = matcher2.group(2);
+					participle2Trascription = matcher.group(3);
+				}
+
 			}
 
-		System.out.println(matcher.groupCount());
+			System.out.println(present);
+//			System.out.println(presentTranscription);
+			System.out.println(past);
+//			System.out.println(pastTranscription);
+//			System.out.println(past2);
+//			System.out.println(past2Transcription);
+//			System.out.println(participle);
+//			System.out.println(participleTrascription);
+//			System.out.println(participle2);
+//			System.out.println(participle2Trascription);
+//			System.out.println(translate);
+
+		}
 
 	}
+
+
 
 }
